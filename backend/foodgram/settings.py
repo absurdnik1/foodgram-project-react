@@ -16,12 +16,12 @@ SECRET_KEY = 'django-insecure-l3zq%axg@iljdxgp44$u^w&i+i!$iesc6_^=8)snd1zcbnp_kf
 # DEBUG = os.getenv('DEBUG')
 DEBUG = False
 
-#DATABASES = {
- #   'default': {
-  #      'ENGINE': 'django.db.backends.sqlite3',
-   #     'NAME': BASE_DIR / 'db.sqlite3',
-    #}
- #}
+# DATABASES = {
+#   'default': {
+#      'ENGINE': 'django.db.backends.sqlite3',
+#     'NAME': BASE_DIR / 'db.sqlite3',
+# }
+# }
 
 DATABASES = {
      'default': {
@@ -92,13 +92,6 @@ WSGI_APPLICATION = 'foodgram.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
-
-#DATABASES = {
-    #'default': {
-        #'ENGINE': 'django.db.backends.sqlite3',
-        #'NAME': BASE_DIR / 'db.sqlite3',
-    #}
-#}
 
 
 # Password validation
@@ -174,9 +167,3 @@ DJOSER = {
     },
     'HIDE_USERS': False,
 }
-
-#CORS_URLS_REGEX = r'^/api/.*$'
-
-#CORS_ALLOWED_ORIGINS = [
-#    'http://localhost:3000',
-#]

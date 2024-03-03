@@ -24,7 +24,7 @@ DEBUG = False
 # }
 
 DATABASES = {
-     'default': {
+    'default': {
          'ENGINE': "django.db.backends.postgresql",
          'NAME': os.getenv('DB_NAME', 'django'),
          'USER': os.getenv('POSTGRES_USER', 'django'),
@@ -32,7 +32,7 @@ DATABASES = {
          'HOST': os.getenv('DB_HOST', ''),
          'PORT': os.getenv('DB_PORT', 5432),
      }
- }
+}
 
 
 ALLOWED_HOSTS = ["84.252.141.54", "localhost", "127.0.0.1", "foodgramforeveryone.ddns.net", "backend"]

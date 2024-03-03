@@ -172,8 +172,8 @@ class RecipeWriteSerializer(ModelSerializer):
     tags = PrimaryKeyRelatedField(queryset=Tag.objects.all(),
                                   many=True)
     author = CustomUserSerializer(read_only=True)
-    ingredient = AmountIngridientInRecipeWriteSerializer(many=True)
-    image = base64
+    ingredients = AmountIngridientInRecipeWriteSerializer(many=True)
+    image = Base64ImageField()
 
     class Meta:
         model = Recipe
@@ -200,7 +200,7 @@ class RecipeWriteSerializer(ModelSerializer):
                 raise ValidationError({
                     'ingredients': 'Ингредиенты не могут повторяться!'
                 })
-            if int(item('amount')) <= 0:
+            if int(item['amount']) <= 0:
                 raise ValidationError({
                     'amount': 'Количество ингредиента должно быть больше нуля!'
                 })

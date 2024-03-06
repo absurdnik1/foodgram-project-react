@@ -211,16 +211,6 @@ class RecipeWriteSerializer(ModelSerializer):
             })
         return value
 
-    #def create_ingredients_amounts(self, ingredients, recipe):
-    #    for ingredient in ingredients:
-    #        AmountIngredientInRecipe.objects.bulk_create(
-    #            AmountIngredientInRecipe(
-    #                recipe=recipe,
-    #                ingredient=ingredient['id'],
-    #                amount=ingredient['amount'],
-    #           )
-    #      )
-
     def create_ingredients_amounts(self, recipe, ingredients):
         instances = [
             AmountIngredientInRecipe(recipe=recipe,

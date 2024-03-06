@@ -1,4 +1,4 @@
-from datetime import datetime
+from django.utils import timezone
 from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -9,6 +9,7 @@ from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
+
 
 from recipes.models import (Favorite, AmountIngredientInRecipe, Recipe,
                             ShoppingCart, Ingredient, Tag)
@@ -61,8 +62,7 @@ class RecipeViewSet(ModelViewSet):
         """Метод для добавления/удаления из избранного."""
         if request.method == 'POST':
             return self.add_to(Favorite, request.user, pk)
-        else:
-            return self.delete_from(Favorite, request.user, pk)
+        return self.delete_from(Favorite, request.user, pk)
 
     @action(
         detail=True,
@@ -73,8 +73,7 @@ class RecipeViewSet(ModelViewSet):
         """Метод для добавления/удаления из списка покупок."""
         if request.method == 'POST':
             return self.add_to(ShoppingCart, request.user, pk)
-        else:
-            return self.delete_from(ShoppingCart, request.user, pk)
+        return self.delete_from(ShoppingCart, request.user, pk)
 
     def add_to(self, model, user, pk):
         """Метод добавления."""
@@ -109,8 +108,8 @@ class RecipeViewSet(ModelViewSet):
         ).values(
             'ingredient__name',
             'ingredient__measurement_unit'
-        ).annotate(amount=Sum('amount'))
-        today = datetime.today()
+        ).annotate(amount_of_ingredient=Sum('amount'))
+        today = timezone.now()
         shopping_list = (
             f'Список покупок для: {user.get_full_name()}\n\n'
             f'Дата: {today:%Y-%m-%d}\n\n'

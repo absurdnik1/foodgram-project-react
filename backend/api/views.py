@@ -1,5 +1,6 @@
 from django.utils import timezone
 from django.db.models import Sum
+from django.contrib.auth import get_user_model
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -9,16 +10,21 @@ from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
-
+from djoser.views import UserViewSet
 
 from recipes.models import (Favorite, AmountIngredientInRecipe, Recipe,
                             ShoppingCart, Ingredient, Tag)
+from users.models import Subscribe
 from .pagination import CustomPagination
 from .permissions import IsAdminOrReadOnly, IsAdminAuthorOrReadOnly
 from .serializers import (IngredientSerializer, RecipeReadSerializer,
                           RecipeShortSerializer, RecipeWriteSerializer,
-                          TagSerializer)
+                          TagSerializer, CustomUserSerializer,
+                          SubscribeSerializer)
 from .filters import IngredientFilter, RecipeFilter
+
+
+User = get_user_model()
 
 
 class TagViewSet(ReadOnlyModelViewSet):
@@ -117,7 +123,7 @@ class RecipeViewSet(ModelViewSet):
         shopping_list += '\n'.join([
             f' - {ingredient["ingredient__name"]} '
             f'({ingredient["ingredient__measurement_unit"]})'
-            f' - {ingredient["amount"]}'
+            f' - {ingredient["amount_of_ingredient"]}'
             for ingredient in ingredients
         ])
         shopping_list += f'\n\nFoodgram ({today:%Y})'
@@ -127,3 +133,48 @@ class RecipeViewSet(ModelViewSet):
         )
         response['Content-Disposition'] = f'attachment; filename={filename}'
         return response
+
+
+class CustomUserViewSet(UserViewSet):
+    """Вьюсет для кастомной модели пользователя."""
+    queryset = User.objects.all()
+    serializer_class = CustomUserSerializer
+    pagination_class = CustomPagination
+
+    @action(
+        detail=True,
+        methods=['post', 'delete'],
+        permission_classes=[IsAuthenticated]
+    )
+    def subscribe(self, request, **kwargs):
+        """Метод для подписки/отписки от автора."""
+        user = request.user
+        author_id = self.kwargs.get('id')
+        author = get_object_or_404(User, id=author_id)
+
+        if request.method == 'POST':
+            serializer = SubscribeSerializer(author,
+                                             data=request.data,
+                                             context={'request': request})
+            serializer.is_valid(raise_exception=True)
+            serializer.save(user=user, author=author)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        subscription = get_object_or_404(Subscribe,
+                                         user=user,
+                                         author=author)
+        subscription.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(
+        detail=False,
+        permission_classes=[IsAuthenticated]
+    )
+    def subscriptions(self, request):
+        """Метод для просмотра подписок."""
+        user = request.user
+        queryset = User.objects.filter(subscribing__user=user)
+        pages = self.paginate_queryset(queryset)
+        serializer = SubscribeSerializer(pages,
+                                         many=True,
+                                         context={'request': request})
+        return self.get_paginated_response(serializer.data)

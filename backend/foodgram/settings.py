@@ -6,14 +6,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'default-secret-key-for-testing')
 
-DEBUG = os.getenv('DEBUG')
-
-# DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': BASE_DIR / 'db.sqlite3',
-#        }
-#        }
+DEBUG = os.getenv('DEFAULT', 'True') == 'True'
 
 DATABASES = {
     'default': {
@@ -25,7 +18,6 @@ DATABASES = {
         'PORT': os.getenv('DB_PORT', 5432),
     }
 }
-
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*')
 
@@ -105,7 +97,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'collected_static'
 
@@ -113,7 +104,6 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 AUTH_USER_MODEL = 'users.User'
-
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

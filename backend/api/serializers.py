@@ -6,7 +6,6 @@ from rest_framework.serializers import ModelSerializer, ReadOnlyField
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_extra_fields.fields import Base64ImageField, base64
 
-
 from recipes.models import (Ingredient, AmountIngredientInRecipe, Recipe, Tag)
 from users.models import Subscribe, User
 
